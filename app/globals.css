@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #000000;
+  --foreground: #f0f0f0;
+}
+
+@layer base {
+  * {
+    @apply border-cosmic-border;
+  }
+  body {
+    @apply bg-cosmic-black text-foreground font-sans;
+    background-image: radial-gradient(ellipse at top, #0d0820 0%, #000000 60%);
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .glow-violet {
+    text-shadow: 0 0 20px rgba(184, 160, 216, 0.5);
+  }
+  .glow-gold {
+    text-shadow: 0 0 20px rgba(232, 216, 168, 0.5);
+  }
+  .card-cosmic {
+    @apply bg-cosmic-card border border-cosmic-border rounded-xl;
+    box-shadow: 0 0 30px rgba(184, 160, 216, 0.05);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0a0a12; }
+::-webkit-scrollbar-thumb { background: #b8a0d8; border-radius: 3px; }
