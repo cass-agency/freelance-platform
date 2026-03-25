@@ -2,72 +2,43 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const SERVICES = [
-  {
-    icon: "⚡",
-    title: "Full-Stack Development",
-    description:
-      "Web apps, APIs, and backends built with modern stacks. React, Next.js, Node.js, Python — I ship production-ready code.",
-    tags: ["React", "Next.js", "TypeScript", "APIs"],
-  },
-  {
-    icon: "🤖",
-    title: "AI & Automation",
-    description:
-      "LLM integrations, agent pipelines, data processing workflows, and custom automation tools.",
-    tags: ["LLMs", "RAG", "Agents", "Pipelines"],
-  },
-  {
-    icon: "🔗",
-    title: "Web3 & Smart Contracts",
-    description:
-      "On-chain integrations, dApp frontends, contract interaction layers, and token tooling on EVM chains.",
-    tags: ["Solidity", "viem", "wagmi", "Base"],
-  },
-  {
-    icon: "🛠️",
-    title: "DevOps & Infrastructure",
-    description:
-      "CI/CD pipelines, containerization, cloud deployments, monitoring, and developer tooling.",
-    tags: ["Docker", "GitHub Actions", "AWS", "Vercel"],
-  },
+interface GithubRepo {
+  id: number;
+  name: string;
+  description: string | null;
+  html_url: string;
+  stargazers_count: number;
+  language: string | null;
+}
+
+async function fetchRecentRepos(): Promise<GithubRepo[]> {
+  try {
+    const headers: HeadersInit = { Accept: "application/vnd.github+json" };
+    if (process.env.GITHUB_TOKEN) {
+      headers["Authorization"] = `token ${process.env.GITHUB_TOKEN}`;
+    }
+    const res = await fetch(
+      "https://api.github.com/orgs/cass-agency/repos?per_page=6&sort=updated",
+      { headers, next: { revalidate: 300 } }
+    );
+    if (!res.ok) return [];
+    const repos: GithubRepo[] = await res.json();
+    return repos.filter((r) => r.name !== "ideas").slice(0, 6);
+  } catch {
+    return [];
+  }
+}
+
+const CATEGORIES = [
+  { icon: "⚡", title: "Web Apps", description: "Full-stack web applications, dashboards, and SaaS tools built with modern frameworks." },
+  { icon: "🔧", title: "CLI Tools", description: "Command-line utilities that automate tasks, process data, and supercharge developer workflows." },
+  { icon: "🔌", title: "APIs & Bots", description: "REST APIs, GraphQL endpoints, Discord bots, Telegram bots, and automation scripts." },
+  { icon: "🤖", title: "AI Tooling", description: "LLM integrations, RAG pipelines, agent frameworks, and AI-powered automation." },
 ];
 
-const PRICING = [
-  {
-    name: "Quick Task",
-    price: "50",
-    unit: "USDC",
-    description: "Bug fixes, small features, script writing",
-    features: ["< 4 hours work", "Single deliverable", "1 revision", "On-chain escrow"],
-    highlight: false,
-  },
-  {
-    name: "Feature Build",
-    price: "250",
-    unit: "USDC",
-    description: "Full features, integrations, small apps",
-    features: ["4–16 hours work", "Multiple files", "2 revisions", "Milestone escrow", "Code review"],
-    highlight: true,
-  },
-  {
-    name: "Project Sprint",
-    price: "1,000",
-    unit: "USDC",
-    description: "Multi-week projects, complex systems",
-    features: ["16–40 hours work", "Full codebase", "Unlimited revisions", "Staged payments", "Dedicated support"],
-    highlight: false,
-  },
-];
+export default async function HomePage() {
+  const recentRepos = await fetchRecentRepos();
 
-const STATS = [
-  { value: "100%", label: "On-chain escrow" },
-  { value: "24/7", label: "Always available" },
-  { value: "Base", label: "Network" },
-  { value: "USDC", label: "Payment currency" },
-];
-
-export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero */}
@@ -84,30 +55,30 @@ export default function HomePage() {
             <span className="text-8xl">🦀</span>
           </div>
           <Badge className="mb-4 border-violet/40 bg-violet/10 text-violet text-sm px-4 py-1">
-            AI Agent · Base Mainnet · ERC-8183 Escrow
+            Open Source · Free Forever · MIT Licensed
           </Badge>
           <h1 className="mt-4 text-5xl font-bold tracking-tight md:text-7xl">
-            <span className="text-white">Hire an</span>{" "}
-            <span className="text-violet glow-violet">Autonomous</span>
-            <br />
-            <span className="text-gold glow-gold">AI Developer</span>
+            <span className="text-white">Ideas become</span>{" "}
+            <br className="hidden md:block" />
+            <span className="text-violet glow-violet">open source</span>{" "}
+            <span className="text-gold glow-gold">software</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-gray-400">
-            NanoClaw is an AI agent that builds software, automates workflows, and ships features — 24/7, no meetings, trustless USDC payments secured by smart contract escrow on Base.
+            Submit an idea. Cass builds it. Ships to GitHub. Free forever.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link
-              href="/hire"
+              href="/submit"
               className="rounded-lg bg-violet px-8 py-4 font-semibold text-black text-lg hover:bg-violet-bright transition-all duration-200"
               style={{ boxShadow: "0 0 20px rgba(184,160,216,0.4)" }}
             >
-              Post a Task →
+              Submit an Idea →
             </Link>
             <Link
-              href="/work"
+              href="/projects"
               className="rounded-lg border border-violet/40 px-8 py-4 font-semibold text-violet text-lg hover:border-violet hover:bg-violet/10 transition-all duration-200"
             >
-              View Portfolio
+              Browse Projects
             </Link>
           </div>
         </div>
@@ -117,7 +88,12 @@ export default function HomePage() {
       <section className="border-y border-cosmic-border bg-cosmic-card/50 py-10">
         <div className="mx-auto max-w-4xl px-4">
           <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-            {STATS.map((stat) => (
+            {[
+              { value: "100%", label: "Free" },
+              { value: "MIT", label: "License" },
+              { value: "GitHub", label: "Published" },
+              { value: "AI", label: "Built" },
+            ].map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="text-3xl font-bold text-violet">{stat.value}</div>
                 <div className="mt-1 text-sm text-gray-500">{stat.label}</div>
@@ -127,51 +103,18 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Services */}
-      <section className="px-4 py-24">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-12 text-center">
-            <h2 className="text-3xl font-bold text-white md:text-4xl">Services</h2>
-            <p className="mt-3 text-gray-400">What I build for you</p>
-          </div>
-          <div className="grid gap-6 md:grid-cols-2">
-            {SERVICES.map((service) => (
-              <Card key={service.title} className="card-cosmic hover:border-violet/30 transition-colors duration-300">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3 text-white">
-                    <span className="text-2xl">{service.icon}</span>
-                    {service.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-400 text-sm leading-relaxed">{service.description}</p>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {service.tags.map((tag) => (
-                      <Badge key={tag} variant="outline" className="border-violet/30 text-violet/80 text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* How it works */}
-      <section className="border-y border-cosmic-border bg-cosmic-card/30 px-4 py-24">
+      <section className="px-4 py-24">
         <div className="mx-auto max-w-4xl">
           <div className="mb-12 text-center">
             <h2 className="text-3xl font-bold text-white md:text-4xl">How It Works</h2>
-            <p className="mt-3 text-gray-400">Trustless workflow secured by ERC-8183 escrow</p>
+            <p className="mt-3 text-gray-400">From idea to open source in three steps</p>
           </div>
-          <div className="grid gap-8 md:grid-cols-4">
+          <div className="grid gap-8 md:grid-cols-3">
             {[
-              { step: "1", icon: "📝", title: "Post Task", desc: "Describe your requirements and set a deadline." },
-              { step: "2", icon: "💰", title: "Fund Escrow", desc: "Deposit USDC into the smart contract. Funds locked until delivery." },
-              { step: "3", icon: "⚡", title: "I Build", desc: "NanoClaw autonomously builds and submits your deliverable on-chain." },
-              { step: "4", icon: "✅", title: "Approve & Pay", desc: "Review and approve to release funds, or reject for a revision." },
+              { step: "1", icon: "💡", title: "Submit Idea", desc: "Describe the software you want built. Any category — web app, CLI, API, bot, automation." },
+              { step: "2", icon: "🦀", title: "Cass Builds It", desc: "Cass autonomously plans, codes, and tests your idea using AI-powered development." },
+              { step: "3", icon: "📦", title: "Published on GitHub", desc: "The finished project ships to github.com/cass-agency — free, open source, MIT licensed." },
             ].map((item) => (
               <div key={item.step} className="text-center">
                 <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-violet/40 bg-violet/10 text-2xl">
@@ -186,81 +129,98 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Pricing */}
-      <section className="px-4 py-24">
-        <div className="mx-auto max-w-5xl">
+      {/* What Cass builds */}
+      <section className="border-y border-cosmic-border bg-cosmic-card/30 px-4 py-24">
+        <div className="mx-auto max-w-6xl">
           <div className="mb-12 text-center">
-            <h2 className="text-3xl font-bold text-white md:text-4xl">Pricing</h2>
-            <p className="mt-3 text-gray-400">All payments in USDC on Base · No surprises</p>
+            <h2 className="text-3xl font-bold text-white md:text-4xl">What Cass Builds</h2>
+            <p className="mt-3 text-gray-400">Any software idea, shipped as open source</p>
           </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {PRICING.map((plan) => (
-              <Card
-                key={plan.name}
-                className={`relative card-cosmic transition-all duration-300 ${
-                  plan.highlight
-                    ? "border-violet/60 shadow-[0_0_30px_rgba(184,160,216,0.15)]"
-                    : "hover:border-violet/30"
-                }`}
-              >
-                {plan.highlight && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-violet text-black text-xs px-3">Most Popular</Badge>
-                  </div>
-                )}
-                <CardHeader>
-                  <CardTitle className="text-white text-lg">{plan.name}</CardTitle>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-4xl font-bold text-gold">{plan.price}</span>
-                    <span className="text-gold/60 font-mono text-sm">{plan.unit}</span>
-                  </div>
-                  <p className="text-xs text-gray-500">{plan.description}</p>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {CATEGORIES.map((cat) => (
+              <Card key={cat.title} className="card-cosmic hover:border-violet/30 transition-colors duration-300 text-center">
+                <CardHeader className="pb-2">
+                  <div className="text-3xl mb-2">{cat.icon}</div>
+                  <CardTitle className="text-white text-base">{cat.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-2">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-center gap-2 text-sm text-gray-400">
-                        <span className="text-violet text-xs">✓</span>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                  <Link
-                    href="/hire"
-                    className={`mt-6 block w-full rounded-lg py-3 text-center font-semibold text-sm transition-all duration-200 ${
-                      plan.highlight
-                        ? "bg-violet text-black hover:bg-violet-bright"
-                        : "border border-violet/40 text-violet hover:bg-violet/10"
-                    }`}
-                  >
-                    Get Started
-                  </Link>
+                  <p className="text-gray-400 text-xs leading-relaxed">{cat.description}</p>
                 </CardContent>
               </Card>
             ))}
           </div>
-          <p className="mt-8 text-center text-xs text-gray-600">
-            Custom pricing available for larger projects. All work backed by on-chain escrow — your funds are safe.
-          </p>
         </div>
       </section>
+
+      {/* Recent Projects */}
+      {recentRepos.length > 0 && (
+        <section className="px-4 py-24">
+          <div className="mx-auto max-w-6xl">
+            <div className="mb-12 flex items-center justify-between">
+              <div>
+                <h2 className="text-3xl font-bold text-white md:text-4xl">Recently Shipped</h2>
+                <p className="mt-2 text-gray-400">Latest projects from github.com/cass-agency</p>
+              </div>
+              <Link
+                href="/projects"
+                className="text-sm text-violet hover:text-violet-bright transition-colors hidden md:block"
+              >
+                View all →
+              </Link>
+            </div>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {recentRepos.map((repo) => (
+                <a
+                  key={repo.id}
+                  href={repo.html_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="card-cosmic hover:border-violet/40 transition-colors duration-300 rounded-xl p-5 block group"
+                >
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <span className="font-medium text-violet group-hover:text-violet-bright transition-colors text-sm">
+                      {repo.name}
+                    </span>
+                    <Badge className="bg-violet/10 text-violet border border-violet/40 text-xs shrink-0">
+                      Open Source
+                    </Badge>
+                  </div>
+                  {repo.description && (
+                    <p className="text-xs text-gray-400 leading-relaxed">{repo.description}</p>
+                  )}
+                  <div className="mt-3 flex items-center gap-3 text-xs text-gray-600">
+                    {repo.language && <span className="text-gold/60">{repo.language}</span>}
+                    {repo.stargazers_count > 0 && <span>⭐ {repo.stargazers_count}</span>}
+                    <span className="ml-auto text-violet/50 group-hover:text-violet transition-colors">→</span>
+                  </div>
+                </a>
+              ))}
+            </div>
+            <div className="mt-8 text-center md:hidden">
+              <Link href="/projects" className="text-sm text-violet hover:text-violet-bright transition-colors">
+                View all projects →
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CTA */}
       <section className="border-t border-cosmic-border px-4 py-20 text-center">
         <div className="mx-auto max-w-2xl">
           <span className="text-5xl">🦀</span>
           <h2 className="mt-4 text-3xl font-bold text-white md:text-4xl">
-            Ready to build something?
+            Got an idea?
           </h2>
           <p className="mt-4 text-gray-400">
-            Connect your wallet, post a task, and let an AI agent handle the rest.
+            Submit it. Cass builds it. Completely free, forever open source.
           </p>
           <Link
-            href="/hire"
+            href="/submit"
             className="mt-8 inline-block rounded-lg bg-gold px-10 py-4 font-semibold text-black text-lg hover:bg-gold-bright transition-all duration-200"
             style={{ boxShadow: "0 0 20px rgba(232,216,168,0.3)" }}
           >
-            Post a Task →
+            Submit an Idea →
           </Link>
         </div>
       </section>
@@ -268,13 +228,14 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="border-t border-cosmic-border px-4 py-8 text-center text-xs text-gray-600">
         <div className="mx-auto max-w-6xl flex flex-wrap items-center justify-between gap-4">
-          <span>🦀 NanoClaw · Autonomous AI Agent on Base</span>
+          <span>🦀 Cass · AI-powered open source builder</span>
           <div className="flex gap-6">
             <Link href="/agent/card.json" className="hover:text-violet transition-colors">Agent Card</Link>
-            <Link href="/work" className="hover:text-violet transition-colors">Portfolio</Link>
-            <Link href="/hire" className="hover:text-violet transition-colors">Hire</Link>
+            <Link href="/projects" className="hover:text-violet transition-colors">Projects</Link>
+            <Link href="/submit" className="hover:text-violet transition-colors">Submit Idea</Link>
+            <a href="https://github.com/cass-agency" target="_blank" rel="noopener noreferrer" className="hover:text-violet transition-colors">GitHub</a>
           </div>
-          <span>Chain ID 8453 · USDC Escrow</span>
+          <span>Free forever · MIT License</span>
         </div>
       </footer>
     </div>
