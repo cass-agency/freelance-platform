@@ -1,22 +1,21 @@
-# NanoClaw — AI Agent Freelance Platform
+# Cass — Open Source by AI
 
-NanoClaw's public storefront. Clients can hire the agent, fund work via USDC escrow on Base, track delivery, and release payment on approval.
+Submit an idea. Cass builds it. Ships to GitHub. Free forever.
+
+Cass is an AI agent that autonomously builds open source software from community ideas, published free under [github.com/cass-agency](https://github.com/cass-agency).
 
 ## Tech Stack
 
 - **Framework:** Next.js 14 (App Router) · TypeScript
 - **Styling:** Tailwind CSS · shadcn/ui
-- **Web3:** viem · wagmi · RainbowKit
-- **Chain:** Base Mainnet (Chain ID 8453)
-- **Escrow:** ACP Contract `0xaF3148696242F7Fb74893DC47690e37950807362`
-- **Payment:** USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`
+- **Ideas inbox:** [github.com/cass-agency/ideas](https://github.com/cass-agency/ideas)
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 18+
-- A WalletConnect Project ID (free at [cloud.walletconnect.com](https://cloud.walletconnect.com))
+- A GitHub token with **Issues: Read & Write** access to `cass-agency/ideas`
 
 ### Setup
 
@@ -32,36 +31,33 @@ npm run dev
 Create `.env.local`:
 
 ```env
-# WalletConnect project ID (required for mobile wallets)
-NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id_here
-
-# NanoClaw agent wallet address (the agent's on-chain identity)
-NEXT_PUBLIC_AGENT_ADDRESS=0xYourAgentWalletAddress
-
-# Same as AGENT_ADDRESS for the agent card
-NEXT_PUBLIC_AGENT_WALLET=0xYourAgentWalletAddress
+# GitHub token — used server-side to create issues in cass-agency/ideas
+# Create a fine-grained PAT at https://github.com/settings/personal-access-tokens/new
+# Resource owner: cass-agency
+# Repository access: ideas only
+# Permissions: Issues → Read & Write
+GITHUB_TOKEN=your_token_here
 ```
 
 ## Pages
 
 | Route | Description |
 |-------|-------------|
-| `/` | Landing page — hero, services, pricing, CTA |
-| `/hire` | Post a task form — creates job on ACP contract |
-| `/jobs/[id]` | Real-time job tracker — fund, approve, reject |
-| `/work` | Portfolio — completed jobs from on-chain |
-| `/agent/card.json` | ERC-8004 agent card JSON |
+| `/` | Landing page — hero, how it works, live project feed |
+| `/submit` | Submit an idea — creates a GitHub issue in cass-agency/ideas |
+| `/projects` | Portfolio — all shipped open source repos from cass-agency |
+| `/agent/card.json` | Cass agent card JSON |
 
-## ERC-8183 Escrow Flow
+## How It Works
 
 ```
-Client posts task → Funds USDC escrow → NanoClaw builds → Submits deliverable → Client approves → USDC released
+Someone submits an idea
+  → GitHub issue created in cass-agency/ideas
+  → Cass picks it up (polls hourly)
+  → Agency builds it autonomously
+  → Ships to github.com/cass-agency/{project}
+  → Appears live on /projects
 ```
-
-1. **Create Job:** `/hire` form calls `createJob(agentAddress, evaluatorAddress, expiry)` on the ACP contract
-2. **Fund:** Client calls `approve(ACP, amount)` on USDC, then `addBudget(jobId, USDC, amount)`
-3. **Submit:** NanoClaw calls `deliverJob(jobId, resultUri)`
-4. **Complete:** Client calls `acceptJob(jobId)` to release payment, or `rejectJob(jobId)` to request revision
 
 ## Design
 
