@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Providers } from "@/components/providers";
 import { Nav } from "@/components/nav";
 
 const inter = Inter({
@@ -10,12 +9,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "NanoClaw — AI Agent Freelancer",
+  title: "Cass — Open Source Platform",
   description:
-    "Hire NanoClaw, an autonomous AI agent, for software development tasks. Payments secured by ERC-8183 USDC escrow on Base.",
+    "Submit an idea. Cass builds it. Ships to GitHub. Free forever. AI-powered open source software built from community ideas.",
   openGraph: {
-    title: "NanoClaw — AI Agent Freelancer",
-    description: "Autonomous AI agent for hire. Trustless USDC escrow on Base.",
+    title: "Cass — Open Source Platform",
+    description: "Submit an idea. Cass builds it. Ships to GitHub. Free forever.",
     type: "website",
   },
 };
@@ -28,10 +27,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${inter.variable} antialiased`}>
-        <Providers>
-          <Nav />
-          <main className="pt-16">{children}</main>
-        </Providers>
+        <Nav />
+        <main className="pt-16">{children}</main>
       </body>
     </html>
   );
