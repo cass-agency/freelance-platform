@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Nav } from "@/components/nav";
+import { Providers } from "@/components/providers";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -27,8 +28,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${inter.variable} antialiased`}>
-        <Nav />
-        <main className="pt-16">{children}</main>
+        <Providers>
+          <Nav />
+          <main className="pt-16">{children}</main>
+        </Providers>
       </body>
     </html>
   );
