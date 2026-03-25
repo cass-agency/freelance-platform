@@ -26,7 +26,7 @@ async function fetchRepos(): Promise<GithubRepo[]> {
     });
     if (!res.ok) return [];
     const repos: GithubRepo[] = await res.json();
-    return repos.filter((r) => r.name !== "ideas");
+    return repos.filter((r) => !["ideas", "freelance-platform"].includes(r.name));
   } catch {
     return [];
   }
