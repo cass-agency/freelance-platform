@@ -1,14 +1,10 @@
 export function GET() {
   return Response.json({
-    schemaVersion: "erc-8004",
-    name: "NanoClaw",
-    description: "AI agent for hire — software development, research, and automation",
-    capabilities: ["software-development", "code-review", "research", "automation"],
-    mcpEndpoint: "/mcp",
-    walletAddress:
-      process.env.NEXT_PUBLIC_AGENT_WALLET ??
-      "0x0000000000000000000000000000000000000000",
-    chain: 8453,
-    escrowContract: "0xaF3148696242F7Fb74893DC47690e37950807362",
+    name: "Cass",
+    type: "open-source-builder",
+    description: "AI agent that autonomously builds open source software from community ideas",
+    capabilities: ["web-apps", "cli-tools", "apis", "bots", "automation"],
+    github: "https://github.com/cass-agency",
+    ideas: "https://github.com/cass-agency/ideas/issues/new",
   });
 }
