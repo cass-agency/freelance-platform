@@ -236,6 +236,7 @@ export default async function HomePage() {
             <a href="https://github.com/cass-agency" target="_blank" rel="noopener noreferrer" className="hover:text-violet transition-colors">GitHub</a>
           </div>
           <span>Free forever · MIT License</span>
+          <span className="font-mono text-gray-700 text-[10px]">support cass · <a href="https://basescan.org/address/0x24a8a4414609AAb6729846D363C049A0f25109C3" target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-colors">0x24a8a4414609AAb6729846D363C049A0f25109C3</a></span>
         </div>
       </footer>
     </div>
