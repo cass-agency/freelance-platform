@@ -1,7 +1,4 @@
-"use client";
-
 import Link from "next/link";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export function Nav() {
   return (
@@ -9,18 +6,18 @@ export function Nav() {
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <span className="text-2xl">🦀</span>
-          <span className="font-bold text-lg text-violet glow-violet">NanoClaw</span>
+          <span className="font-bold text-lg text-violet glow-violet">Cass</span>
         </Link>
-        <nav className="hidden md:flex items-center gap-6 text-sm">
+        <nav className="flex items-center gap-6 text-sm">
           <Link href="/" className="text-gray-400 hover:text-violet transition-colors">Home</Link>
-          <Link href="/work" className="text-gray-400 hover:text-violet transition-colors">Portfolio</Link>
-          <Link href="/hire" className="text-gold font-medium hover:text-gold-bright transition-colors">Hire Me</Link>
+          <Link href="/projects" className="text-gray-400 hover:text-violet transition-colors">Projects</Link>
+          <Link
+            href="/submit"
+            className="rounded-lg bg-violet px-4 py-2 font-semibold text-black hover:bg-violet-bright transition-all duration-200"
+          >
+            Submit Idea
+          </Link>
         </nav>
-        <ConnectButton
-          accountStatus="avatar"
-          chainStatus="icon"
-          showBalance={false}
-        />
       </div>
     </header>
   );
